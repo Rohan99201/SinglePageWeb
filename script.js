@@ -9,19 +9,9 @@ async function sha256(input) {
 
 // GA4 ecommerce click tracking
 function trackClick(buttonOrLabel, eventName) {
-  if (typeof buttonOrLabel === 'string' && !eventName) {
-    alert("Clicked: " + buttonOrLabel);
-    console.log("Clicked:", buttonOrLabel);
-    return;
-  }
-
   const button = buttonOrLabel;
   const productCard = button.closest('.product-card');
-  if (!productCard) {
-    alert("Clicked: " + eventName);
-    console.log("Clicked:", eventName);
-    return;
-  }
+  if (!productCard) return;
 
   const item = {
     item_id: productCard.getAttribute('data-item-id'),
@@ -79,7 +69,7 @@ async function loginUser(event) {
   if (!username) return;
 
   const hashedUserID = await sha256(username);
-  const userType = "standard"; // Or derive based on logic
+  const userType = "standard";
 
   localStorage.setItem("user", username);
   updateLoginState();
@@ -88,18 +78,35 @@ async function loginUser(event) {
   window.dataLayer.push({
     event: 'user_login',
     userID_sha256: hashedUserID,
-    userType: userType
+    userType: userType,
+    userStatus: 'logged_in'
   });
 
   alert(`Logged in as ${username}`);
-  console.log("User login event pushed:", { userID_sha256: hashedUserID, userType });
+  console.log("User login event pushed:", { userID_sha256: hashedUserID, userType, userStatus: 'logged_in' });
 }
 
-function logoutUser() {
+// Logout with GA4 logout event
+async function logoutUser() {
+  const username = localStorage.getItem("user");
+  const hashedUserID = username ? await sha256(username.toLowerCase()) : null;
+
+  if (hashedUserID) {
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({
+      event: 'user_logout',
+      userID_sha256: hashedUserID,
+      userStatus: 'logged_out'
+    });
+
+    console.log("User logout event pushed:", { userID_sha256: hashedUserID, userStatus: 'logged_out' });
+  }
+
   localStorage.removeItem("user");
   updateLoginState();
 }
 
+// Update UI state
 function updateLoginState() {
   const user = localStorage.getItem("user");
   const loginSection = document.getElementById("login-section");
@@ -116,4 +123,24 @@ function updateLoginState() {
   }
 }
 
-document.addEventListener("DOMContentLoaded", updateLoginState);
+// Navigation click tracking
+function setupNavigationTracking() {
+  const navLinks = document.querySelectorAll("nav a");
+  navLinks.forEach(link => {
+    link.addEventListener("click", function () {
+      const navItem = this.textContent.trim();
+      window.dataLayer = window.dataLayer || [];
+      window.dataLayer.push({
+        event: 'navigation_click',
+        nav_item: navItem
+      });
+
+      console.log("navigation_click:", navItem);
+    });
+  });
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  updateLoginState();
+  setupNavigationTracking();
+});
