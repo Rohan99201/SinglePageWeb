@@ -76,14 +76,20 @@
     })(document,window.mixpanel||[]);
     // mixpanel.init("fd55b996617456bac83365cdbfddc075");
     mixpanel.init("fd55b996617456bac83365cdbfddc075", {
-  debug: true,
-  persistence: 'localStorage',
-  track_pageview: true,
-  session_recording: {
-    maskInputFields: true, // hide sensitive input fields
-    recordCanvas: true      // optional
+    debug: true,
+    persistence: 'localStorage',
+    track_pageview: true,
+    record_sessions_percent: 100,  // ✅ Set 100 to record all sessions (adjust to 1–10 in production)
+    record_mask_text_selector: "", // ✅ Unmask all text
+    record_block_selector: "",     // ✅ Unmask images/videos
+    record_canvas: true,           // ✅ Capture <canvas> content
+    record_heatmap_data: true,     // ✅ Enable click heatmaps
+    session_recording: {
+      maskInputFields: true,       // Optional: mask input fields
+      recordCanvas: true
   }
 });
+
 
   </script>
 
