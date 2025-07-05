@@ -1,204 +1,229 @@
 /* Reset and Body */
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-  }
-  
-  body {
-    font-family: 'Arial', sans-serif;
-    color: #fff;
-    background-image: radial-gradient(
-      circle farthest-corner at 10% 20%,
-      rgba(214, 40, 40, 1) 0%,
-      rgba(255, 195, 0, 1) 90%
-    );
-    min-height: 100vh;
-  }
-  
-  /* Header */
-  header {
-    background-color: rgba(0, 0, 0, 0.7);
-    padding: 15px 40px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  
-  .logo {
-    font-size: 1.8rem;
-    font-weight: bold;
-    color: white;
-  }
-  
-  nav a {
-    margin-left: 20px;
-    color: white;
-    text-decoration: none;
-    font-size: 1rem;
-  }
-  
-  nav a:hover {
-    text-decoration: underline;
-  }
-  
-  /* Main Section */
-  .hero {
-    display: flex;
-    justify-content: center;
-    padding: 60px 20px;
-  }
-  
-  /* Product Grid */
-  .product-grid {
-    display: flex;
-    gap: 30px;
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-  
-  /* Product Card */
-  .product-card {
-    width: 300px;
-    background-color: white;
-    border-radius: 15px;
-    overflow: hidden;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-    text-align: center;
-    padding: 20px;
-    transition: transform 0.3s ease;
-  }
-  
-  .product-card:hover {
-    transform: scale(1.03);
-  }
-  
-  .product-card img {
-    width: 100%;
-    height: auto;
-    border-radius: 10px;
-  }
-  
-  .product-card h2 {
-    font-size: 1.2rem;
-    color: #333;
-    margin: 15px 0 5px;
-  }
-  
-  .product-card .price {
-    font-size: 1rem;
-    color: #d62828;
-    margin-bottom: 15px;
-  }
-  
-  .product-card button {
-    padding: 10px 20px;
-    background-color: #d62828;
-    border: none;
-    color: white;
-    border-radius: 5px;
-    font-size: 1rem;
-    cursor: pointer;
-  }
-  
-  .product-card button:hover {
-    background-color: #a61b1b;
-  }
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Arial', sans-serif;
+  color: #fff;
+  background-image: radial-gradient(
+    circle farthest-corner at 10% 20%,
+    rgba(214, 40, 40, 1) 0%,
+    rgba(255, 195, 0, 1) 90%
+  );
+  min-height: 100vh;
+}
+
+/* Header */
+header {
+  background-color: rgba(0, 0, 0, 0.7);
+  padding: 15px 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: white;
+}
+
+nav a {
+  margin-left: 20px;
+  color: white;
+  text-decoration: none;
+  font-size: 1rem;
+}
+
+nav a:hover {
+  text-decoration: underline;
+}
+
+/* Main Section */
+.hero {
+  display: flex;
+  justify-content: center;
+  padding: 60px 20px;
+}
+
+/* Product Grid */
+.product-grid {
+  display: flex;
+  gap: 30px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+/* Product Card */
+.product-card {
+  width: 300px;
+  background-color: white;
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  padding: 20px;
+  transition: transform 0.3s ease;
+}
+
+.product-card:hover {
+  transform: scale(1.03);
+}
+
+.product-card img {
+  width: 100%;
+  height: auto;
+  border-radius: 10px;
+}
+
+.product-card h2 {
+  font-size: 1.2rem;
+  color: #333;
+  margin: 15px 0 5px;
+}
+
+.product-card .price {
+  font-size: 1rem;
+  color: #d62828;
+  margin-bottom: 15px;
+}
+
+/* Buttons styled like reference image */
+.product-card button {
+  background-color: #d62828;
+  color: white;
+  border: none;
+  border-radius: 40px;
+  padding: 12px 24px;
+  margin: 8px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.3s ease;
+  position: relative;
+}
+
+.product-card button::after {
+  content: '\003e'; /* Unicode for > */
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 10px;
+  font-size: 14px;
+}
+
+.product-card button:hover {
+  background-color: #a61b1b;
+}
+
 /* Newsletter Section */
 .newsletter {
-    text-align: center;
-    padding: 50px 20px;
-    color: white;
-    background: rgba(0, 0, 0, 0.3); /* optional dark fade behind */
-    margin-top: 40px;
-  }
-  
-  .newsletter h3 {
-    font-size: 1.5rem;
-    margin-bottom: 20px;
-  }
-  
-  .newsletter form {
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 15px;
-  }
-  
-  .newsletter input[type="email"] {
-    padding: 10px 15px;
-    font-size: 1rem;
-    border: 2px solid white;
-    border-radius: 5px;
-    background: transparent;
-    color: white;
-    outline: none;
-  }
-  
-  .newsletter input[type="email"]::placeholder {
-    color: rgba(255, 255, 255, 0.7);
-  }
-  
-  .newsletter button {
-    padding: 10px 20px;
-    font-size: 1rem;
-    border: 2px solid white;
-    border-radius: 5px;
-    background: transparent;
-    color: white;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-  }
-  
-  .newsletter button:hover {
-    background-color: white;
-    color: black;
-  }
-  .login, .greeting {
-    margin: 30px auto;
-    padding: 20px;
-    max-width: 400px;
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(4px);
-    border-radius: 10px;
-    text-align: center;
-    color: white;
-  }
-  
-  .login input,
-  .login button {
-    padding: 10px;
-    margin: 10px 5px;
-    border: none;
-    border-radius: 5px;
-    font-size: 1rem;
-  }
-  
-  .login input {
-    width: 60%;
-    border: 2px solid white;
-    background: transparent;
-    color: white;
-    outline: none;
-  }
-  
-  .login input::placeholder {
-    color: rgba(255, 255, 255, 0.6);
-  }
-  
-  .login button,
-  .greeting button {
-    background-color: #d62828;
-    color: white;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-  }
-  
-  .login button:hover,
-  .greeting button:hover {
-    background-color: #a61b1b;
-  }
-  /* Modal popup styles */
+  text-align: center;
+  padding: 50px 20px;
+  color: white;
+  background: rgba(0, 0, 0, 0.3);
+  margin-top: 40px;
+}
+
+.newsletter h3 {
+  font-size: 1.5rem;
+  margin-bottom: 20px;
+}
+
+.newsletter form {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.newsletter input[type="email"] {
+  padding: 10px 15px;
+  font-size: 1rem;
+  border: 2px solid white;
+  border-radius: 5px;
+  background: transparent;
+  color: white;
+  outline: none;
+}
+
+.newsletter input[type="email"]::placeholder {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.newsletter button {
+  padding: 10px 20px;
+  font-size: 1rem;
+  border: 2px solid white;
+  border-radius: 5px;
+  background: transparent;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.newsletter button:hover {
+  background-color: white;
+  color: black;
+}
+
+.login, .greeting {
+  margin: 30px auto;
+  padding: 20px;
+  max-width: 400px;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(4px);
+  border-radius: 10px;
+  text-align: center;
+  color: white;
+}
+
+.login input,
+.login button {
+  padding: 10px;
+  margin: 10px 5px;
+  border: none;
+  border-radius: 5px;
+  font-size: 1rem;
+}
+
+.login input {
+  width: 60%;
+  border: 2px solid white;
+  background: transparent;
+  color: white;
+  outline: none;
+}
+
+.login input::placeholder {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.login button,
+.greeting button {
+  background-color: #d62828;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.login button:hover,
+.greeting button:hover {
+  background-color: #a61b1b;
+}
+
+/* Modal popup styles */
 .modal {
   display: none;
   position: fixed;
