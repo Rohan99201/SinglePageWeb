@@ -1,4 +1,4 @@
-// GA4 + Click tracking
+// GA4 Click Tracking for product actions
 function trackClick(buttonOrLabel, eventName) {
   if (typeof buttonOrLabel === 'string' && !eventName) {
     alert("Clicked: " + buttonOrLabel);
@@ -40,23 +40,46 @@ function trackClick(buttonOrLabel, eventName) {
   console.log('GA4 Event:', eventName, ecommerceData);
 }
 
-// Newsletter
+// Newsletter subscription handler + GA4 event
 function submitNewsletter(event) {
   event.preventDefault();
   const emailInput = event.target.querySelector("input[type='email']");
-  const email = emailInput.value;
-  alert("Subscribed with: " + email);
-  console.log("Newsletter subscribed:", email);
+  const email = emailInput.value.trim();
+
+  if (email) {
+    alert("Subscribed with: " + email);
+    console.log("Newsletter subscribed:", email);
+
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({
+      event: 'subscribe_newsletter',
+      email: email
+    });
+  }
+
   emailInput.value = "";
 }
 
-// Login functionality
+// Login functionality with GA4 custom event
 function loginUser(event) {
   event.preventDefault();
   const username = document.getElementById("username").value.trim();
+  const userType = "standard"; // Or derive from logic later
+
   if (username) {
     localStorage.setItem("user", username);
     updateLoginState();
+
+    // GA4 custom event
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({
+      event: 'user_login',
+      userID: username,
+      userType: userType
+    });
+
+    alert(`Logged in as ${username}`);
+    console.log("User login event pushed:", { userID: username, userType });
   }
 }
 
@@ -81,5 +104,4 @@ function updateLoginState() {
   }
 }
 
-// Initialize on page load
 document.addEventListener("DOMContentLoaded", updateLoginState);
