@@ -7,7 +7,6 @@ async function sha256(input) {
   return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 }
 
-// GA4 ecommerce click tracking
 function trackClick(buttonOrLabel, eventName) {
   const button = buttonOrLabel;
   const productCard = button.closest('.product-card');
@@ -35,11 +34,13 @@ function trackClick(buttonOrLabel, eventName) {
     ecommerce: ecommerceData
   });
 
+  // Mixpanel
+  mixpanel.track(eventName, item);
+
   alert(`Clicked: ${eventName} - ${item.item_name}`);
-  console.log('GA4 Event:', eventName, ecommerceData);
+  console.log('GA4 + Mixpanel Event:', eventName, ecommerceData);
 }
 
-// Newsletter subscription handler with SHA-256
 async function submitNewsletter(event) {
   event.preventDefault();
   const emailInput = event.target.querySelector("input[type='email']");
@@ -59,7 +60,6 @@ async function submitNewsletter(event) {
   emailInput.value = "";
 }
 
-// Login handler
 async function loginUser(event) {
   event.preventDefault();
   const username = document.getElementById("username").value.trim().toLowerCase();
@@ -79,11 +79,18 @@ async function loginUser(event) {
     userStatus: 'logged_in'
   });
 
+  // Mixpanel login tracking
+  mixpanel.identify(hashedUserID);
+  mixpanel.people.set({
+    $name: username,
+    user_type: userType
+  });
+  mixpanel.track("user_login");
+
   alert(`Logged in as ${username}`);
-  console.log("User login event pushed:", { userID_sha256: hashedUserID, userType });
+  console.log("User login:", hashedUserID);
 }
 
-// Logout handler
 async function logoutUser() {
   const username = localStorage.getItem("user");
   const hashedUserID = username ? await sha256(username.toLowerCase()) : null;
@@ -95,13 +102,15 @@ async function logoutUser() {
       userID_sha256: hashedUserID,
       userStatus: 'logged_out'
     });
+
+    mixpanel.track("user_logout");
+    mixpanel.reset();
   }
 
   localStorage.removeItem("user");
   updateLoginState();
 }
 
-// Update greeting state
 function updateLoginState() {
   const user = localStorage.getItem("user");
   const greetingSection = document.getElementById("greeting-section");
@@ -115,21 +124,23 @@ function updateLoginState() {
   }
 }
 
-// Navigation click handler
 function handleNavClick(label) {
   window.dataLayer = window.dataLayer || [];
   window.dataLayer.push({
     event: "navigation_click",
     nav_item: label
   });
+
+  mixpanel.track("navigation_click", {
+    nav_item: label
+  });
+
   console.log("navigation_click:", label);
 }
 
-// Toggle login modal
 function toggleLoginModal() {
   const modal = document.getElementById("login-modal");
   modal.style.display = modal.style.display === "block" ? "none" : "block";
 }
 
-// Init
 document.addEventListener("DOMContentLoaded", updateLoginState);
