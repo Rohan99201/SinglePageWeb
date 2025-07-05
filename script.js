@@ -35,7 +35,18 @@ function trackClick(buttonOrLabel, eventName) {
   });
 
   // Mixpanel
-  mixpanel.track(eventName, item);
+  // mixpanel.track(eventName, item);
+
+  if (eventName === 'purchase') {
+    mixpanel.track('purchase', {
+      ...item,
+      transaction_id: 'T' + Date.now(),
+      value: item.price,
+      currency: 'USD'
+    });
+  } else {
+    mixpanel.track(eventName, item);
+  }  
 
   alert(`Clicked: ${eventName} - ${item.item_name}`);
   console.log('GA4 + Mixpanel Event:', eventName, ecommerceData);
