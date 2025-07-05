@@ -142,11 +142,11 @@ function handleNavClick(label) {
     nav_item: label
   });
 
-  mixpanel.track("navigation_click", {
-    nav_item: label
-  });
+  // mixpanel.track("navigation_click", {
+  //   nav_item: label
+  // });
 
-  console.log("navigation_click:", label);
+  // console.log("navigation_click:", label);
 }
 
 function toggleLoginModal() {
