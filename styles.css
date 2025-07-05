@@ -198,4 +198,47 @@
   .greeting button:hover {
     background-color: #a61b1b;
   }
-  
+  /* Modal popup styles */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 999;
+  padding-top: 120px;
+  left: 0; top: 0;
+  width: 100%; height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.6);
+}
+
+.modal-content {
+  background-color: #fff;
+  margin: auto;
+  padding: 25px;
+  border: 1px solid #888;
+  width: 90%;
+  max-width: 400px;
+  border-radius: 10px;
+  text-align: center;
+}
+
+.modal-content input,
+.modal-content button {
+  padding: 10px;
+  margin: 10px;
+  width: 80%;
+  border-radius: 6px;
+}
+
+.modal-content button {
+  background: #d62828;
+  color: white;
+  border: none;
+}
+
+.close {
+  color: #000;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+}

@@ -44,9 +44,7 @@ async function submitNewsletter(event) {
   event.preventDefault();
   const emailInput = event.target.querySelector("input[type='email']");
   const email = emailInput.value.trim().toLowerCase();
-
   if (!email) return;
-
   const hashedEmail = await sha256(email);
 
   window.dataLayer = window.dataLayer || [];
@@ -61,18 +59,17 @@ async function submitNewsletter(event) {
   emailInput.value = "";
 }
 
-// Login with SHA-256 and user_type
+// Login handler
 async function loginUser(event) {
   event.preventDefault();
   const username = document.getElementById("username").value.trim().toLowerCase();
-
   if (!username) return;
-
   const hashedUserID = await sha256(username);
   const userType = "standard";
 
   localStorage.setItem("user", username);
   updateLoginState();
+  document.getElementById("login-modal").style.display = "none";
 
   window.dataLayer = window.dataLayer || [];
   window.dataLayer.push({
@@ -83,10 +80,10 @@ async function loginUser(event) {
   });
 
   alert(`Logged in as ${username}`);
-  console.log("User login event pushed:", { userID_sha256: hashedUserID, userType, userStatus: 'logged_in' });
+  console.log("User login event pushed:", { userID_sha256: hashedUserID, userType });
 }
 
-// Logout with GA4 logout event
+// Logout handler
 async function logoutUser() {
   const username = localStorage.getItem("user");
   const hashedUserID = username ? await sha256(username.toLowerCase()) : null;
@@ -98,49 +95,41 @@ async function logoutUser() {
       userID_sha256: hashedUserID,
       userStatus: 'logged_out'
     });
-
-    console.log("User logout event pushed:", { userID_sha256: hashedUserID, userStatus: 'logged_out' });
   }
 
   localStorage.removeItem("user");
   updateLoginState();
 }
 
-// Update UI state
+// Update greeting state
 function updateLoginState() {
   const user = localStorage.getItem("user");
-  const loginSection = document.getElementById("login-section");
   const greetingSection = document.getElementById("greeting-section");
   const welcomeMessage = document.getElementById("welcome-message");
 
   if (user) {
-    loginSection.style.display = "none";
     greetingSection.style.display = "block";
     welcomeMessage.textContent = `Welcome, ${user}!`;
   } else {
-    loginSection.style.display = "block";
     greetingSection.style.display = "none";
   }
 }
 
-// Navigation click tracking
-function setupNavigationTracking() {
-  const navLinks = document.querySelectorAll("nav a");
-  navLinks.forEach(link => {
-    link.addEventListener("click", function () {
-      const navItem = this.textContent.trim();
-      window.dataLayer = window.dataLayer || [];
-      window.dataLayer.push({
-        event: 'navigation_click',
-        nav_item: navItem
-      });
-
-      console.log("navigation_click:", navItem);
-    });
+// Navigation click handler
+function handleNavClick(label) {
+  window.dataLayer = window.dataLayer || [];
+  window.dataLayer.push({
+    event: "navigation_click",
+    nav_item: label
   });
+  console.log("navigation_click:", label);
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-  updateLoginState();
-  setupNavigationTracking();
-});
+// Toggle login modal
+function toggleLoginModal() {
+  const modal = document.getElementById("login-modal");
+  modal.style.display = modal.style.display === "block" ? "none" : "block";
+}
+
+// Init
+document.addEventListener("DOMContentLoaded", updateLoginState);
