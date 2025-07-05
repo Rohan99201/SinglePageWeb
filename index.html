@@ -1,27 +1,37 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <!-- Adobe Launch scripts -->
   <script src="https://assets.adobedtm.com/ac7e16474f69/f877808f66e3/launch-df329f115936.min.js" async></script>
   <script src="https://assets.adobedtm.com/ac7e16474f69/f877808f66e3/launch-f6a910cf63b8-staging.min.js" async></script>
   <script src="https://assets.adobedtm.com/ac7e16474f69/f877808f66e3/launch-66d7dc932da2-development.min.js" async></script>
+
   <!-- Google Tag Manager -->
-<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  <script>
+    (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
     new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
     j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-    })(window,document,'script','dataLayer','GTM-NJT9GRQB');</script>
-    <!-- End Google Tag Manager -->
+    })(window,document,'script','dataLayer','GTM-NJT9GRQB');
+  </script>
+  <!-- End GTM -->
+
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Product Card</title>
+
+  <!-- Favicon -->
   <link rel="icon" href="favicon_io/favicon-32x32.png" type="image/png" />
+
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <!-- Google Tag Manager (noscript) -->
-<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NJT9GRQB"
-    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-    <!-- End Google Tag Manager (noscript) -->
+  <!-- GTM noscript -->
+  <noscript>
+    <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NJT9GRQB"
+    height="0" width="0" style="display:none;visibility:hidden"></iframe>
+  </noscript>
+
   <header>
     <div class="logo">CrewStreet</div>
     <nav>
@@ -32,46 +42,57 @@
     </nav>
   </header>
 
+  <!-- Login Section -->
+  <section id="login-section" class="login">
+    <h3>Login</h3>
+    <form onsubmit="loginUser(event)">
+      <input type="text" id="username" placeholder="Enter your name" required />
+      <button type="submit">Login</button>
+    </form>
+  </section>
+
+  <!-- Greeting Section -->
+  <section id="greeting-section" class="greeting" style="display:none;">
+    <p id="welcome-message"></p>
+    <button onclick="logoutUser()">Logout</button>
+  </section>
+
   <main class="hero">
     <div class="product-grid">
-     <!-- First Product -->
-<div class="product-card" data-item-id="nike-sb-dunk-regular" data-item-name="Nike SB Dunk Regular" data-price="89.99" data-item-category="Sneakers">
-    <img src="https://crepdogcrew.com/cdn/shop/products/dunkloww.jpg?v=1747245646&width=800" alt="Sneaker 1" />
-    <h2>Nike SB Dunk Regular</h2>
-    <p class="price">$89.99</p>
-    <button onclick="trackClick(this, 'view_item')">View Details</button>
-  </div>
-  
-  <!-- Second Product -->
-  <div class="product-card" data-item-id="air-jordan-1" data-item-name="Air Jordan 1" data-price="74.99" data-item-category="Sneakers">
-    <img src="https://crepdogcrew.com/cdn/shop/files/2_93d1ab91-051e-4259-bfd4-dedceb60aaae.png?v=1746988395&width=600" alt="Sneaker 2" />
-    <h2>Air Jordan 1</h2>
-    <p class="price">$74.99</p>
-    <button onclick="trackClick(this, 'add_to_cart')">Add to Cart</button>
-  </div>
-  
-  <!-- Third Product -->
-  <div class="product-card" data-item-id="nike-sb-dunk-low-pro" data-item-name="Nike SB Dunk Low Pro" data-price="94.99" data-item-category="Sneakers">
-    <img src="https://crepdogcrew.com/cdn/shop/files/73.png?v=1747245027&width=800" alt="Sneaker 3" />
-    <h2>Nike SB Dunk Low Pro</h2>
-    <p class="price">$94.99</p>
-    <button onclick="trackClick(this, 'purchase')">Purchase</button>
-  </div>
-  
-  <!-- Fourth Product -->
-  <div class="product-card" data-item-id="jordan-1-low-se-coconut" data-item-name="Jordan 1 Low SE Coconut" data-price="54.99" data-item-category="Sneakers">
-    <img src="https://crepdogcrew.com/cdn/shop/files/2_4faf3d34-e688-4389-bd27-80efb988b6ca.png?v=1747243925&width=500" alt="Sneaker 4" />
-    <h2>Jordan 1 Low SE Cocunut</h2>
-    <p class="price">$54.99</p>
-    <button onclick="trackClick(this, 'select_item')">Select Item</button>
-  </div>
-  
+      <!-- First Product -->
+      <div class="product-card" data-item-id="nike-sb-dunk-regular" data-item-name="Nike SB Dunk Regular" data-price="89.99" data-item-category="Sneakers">
+        <img src="https://crepdogcrew.com/cdn/shop/products/dunkloww.jpg?v=1747245646&width=800" alt="Sneaker 1" />
+        <h2>Nike SB Dunk Regular</h2>
+        <p class="price">$89.99</p>
+        <button onclick="trackClick(this, 'view_item')">View Details</button>
+      </div>
 
+      <!-- Second Product -->
+      <div class="product-card" data-item-id="air-jordan-1" data-item-name="Air Jordan 1" data-price="74.99" data-item-category="Sneakers">
+        <img src="https://crepdogcrew.com/cdn/shop/files/2_93d1ab91-051e-4259-bfd4-dedceb60aaae.png?v=1746988395&width=600" alt="Sneaker 2" />
+        <h2>Air Jordan 1</h2>
+        <p class="price">$74.99</p>
+        <button onclick="trackClick(this, 'add_to_cart')">Add to Cart</button>
+      </div>
 
+      <!-- Third Product -->
+      <div class="product-card" data-item-id="nike-sb-dunk-low-pro" data-item-name="Nike SB Dunk Low Pro" data-price="94.99" data-item-category="Sneakers">
+        <img src="https://crepdogcrew.com/cdn/shop/files/73.png?v=1747245027&width=800" alt="Sneaker 3" />
+        <h2>Nike SB Dunk Low Pro</h2>
+        <p class="price">$94.99</p>
+        <button onclick="trackClick(this, 'purchase')">Purchase</button>
+      </div>
+
+      <!-- Fourth Product -->
+      <div class="product-card" data-item-id="jordan-1-low-se-coconut" data-item-name="Jordan 1 Low SE Coconut" data-price="54.99" data-item-category="Sneakers">
+        <img src="https://crepdogcrew.com/cdn/shop/files/2_4faf3d34-e688-4389-bd27-80efb988b6ca.png?v=1747243925&width=500" alt="Sneaker 4" />
+        <h2>Jordan 1 Low SE Coconut</h2>
+        <p class="price">$54.99</p>
+        <button onclick="trackClick(this, 'select_item')">Select Item</button>
+      </div>
     </div>
   </main>
 
-  <script src="script.js"></script>
   <footer class="newsletter">
     <h3>Subscribe to our Newsletter</h3>
     <form onsubmit="submitNewsletter(event)">
@@ -79,5 +100,7 @@
       <button type="submit">Submit</button>
     </form>
   </footer>
+
+  <script src="script.js"></script>
 </body>
 </html>
