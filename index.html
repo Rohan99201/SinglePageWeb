@@ -74,7 +74,17 @@
         c.parentNode.insertBefore(b,c)
       }
     })(document,window.mixpanel||[]);
-    mixpanel.init("fd55b996617456bac83365cdbfddc075");
+    // mixpanel.init("fd55b996617456bac83365cdbfddc075");
+    mixpanel.init("fd55b996617456bac83365cdbfddc075", {
+  debug: true,
+  persistence: 'localStorage',
+  track_pageview: true,
+  session_recording: {
+    maskInputFields: true, // hide sensitive input fields
+    recordCanvas: true      // optional
+  }
+});
+
   </script>
 
   <meta charset="UTF-8" />
