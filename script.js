@@ -123,7 +123,7 @@ async function loginUser(event) {
   console.log("User login:", hashedUserID);
 }
 
-async function logoutUser() {
+async function logoutUser(source = "manual") {
   const username = getUser();
   const company = getCompany();
   const hashedUserID = username ? await sha256(username.toLowerCase()) : null;
@@ -139,10 +139,25 @@ async function logoutUser() {
 
     mixpanel.track("user_logout", {
       userID_sha256: hashedUserID,
-      company: company
+      company: company,
+      userStatus: 'logged_out',
+      logout_source: source
     });
 
+    // Stop session recording (client-side hint only, Mixpanel controls backend timing)
+    mixpanel.track("session_recording_stopped", {
+      reason: "inactivity_logout",
+      company: company
+    });
+    console.log("🛑 Session recording marked as stopped due to inactivity.");
+
     mixpanel.reset();
+
+    // Re-register userStatus as logged_out
+    mixpanel.register({
+      userStatus: "logged_out"
+    });
+    console.log("🔓 Mixpanel: userStatus set to logged_out after reset");
   }
 
   localStorage.removeItem("user");
@@ -207,27 +222,20 @@ function startInactivityTimer() {
 function resetInactivityTimer() {
   clearTimeout(inactivityTimer);
   inactivityTimer = setTimeout(() => {
-    triggerInactivityReminder(); // 5-min reminder
-    setTimeout(async () => {
-      const username = getUser();
-      const company = getCompany();
+    triggerInactivityReminder(); // 5-min warning
+    setTimeout(() => {
       mixpanel.track("auto_logout_inactivity", {
         message: "User auto-logged out after 6 minutes of inactivity",
-        user: username || "Unknown",
-        company: company || "Unknown"
+        user: getUser() || "Unknown",
+        company: getCompany() || "Unknown"
       });
 
+      console.log("🕒 Auto logout due to inactivity.");
       alert("You have been automatically logged out due to inactivity.");
-      logoutUser();
-    }, 60000); // 1 minute after reminder
-  }, 300000); // 5 minutes
-}
+      logoutUser("inactivity");
+    }, 60000); // 1 minute after warning
+  }, 300000); // 5 min inactivity
 
-function triggerInactivityReminder() {
-  alert("You've been inactive for 5 minutes. You will be logged out in 1 more minute.");
-  mixpanel.track('inactivity_reminder', {
-    message: "User inactive for 5 min",
-    user: getUser() || 'Unknown',
-    company: getCompany() || 'Unknown'
-  });
+  // ✅ Optional: client-side simulation of session recording timeout
+  // Mixpanel's true `record_idle_timeout_ms` is controlled in their backend
 }
