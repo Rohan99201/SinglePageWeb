@@ -106,7 +106,6 @@ async function loginUser(event) {
     userStatus: 'logged_in'
   });
 
-  // Mixpanel login setup
   mixpanel.identify(hashedUserID);
   mixpanel.register({
     userID_sha256: hashedUserID,
@@ -125,7 +124,8 @@ async function loginUser(event) {
 }
 
 async function logoutUser() {
-  const username = localStorage.getItem("user");
+  const username = getUser();
+  const company = getCompany();
   const hashedUserID = username ? await sha256(username.toLowerCase()) : null;
 
   if (hashedUserID) {
@@ -134,10 +134,14 @@ async function logoutUser() {
       event: 'user_logout',
       userID_sha256: hashedUserID,
       userStatus: 'logged_out',
-      company: getCompany()
+      company: company
     });
 
-    mixpanel.track("user_logout");
+    mixpanel.track("user_logout", {
+      userID_sha256: hashedUserID,
+      company: company
+    });
+
     mixpanel.reset();
   }
 
@@ -147,21 +151,9 @@ async function logoutUser() {
   updateLoginState();
 }
 
-// function updateLoginState() {
-//   const user = getUser();
-//   const greetingSection = document.getElementById("greeting-section");
-//   const welcomeMessage = document.getElementById("welcome-message");
-
-//   if (user) {
-//     greetingSection.style.display = "block";
-//     welcomeMessage.textContent = `Welcome, ${user}!`;
-//   } else {
-//     greetingSection.style.display = "none";
-//   }
-// }
-
+// Update UI based on login state
 function updateLoginState() {
-  const user = localStorage.getItem("user");
+  const user = getUser();
   const greetingSection = document.getElementById("greeting-section");
   const welcomeMessage = document.getElementById("welcome-message");
 
@@ -169,31 +161,31 @@ function updateLoginState() {
     greetingSection.style.display = "block";
     welcomeMessage.textContent = `Welcome, ${user}!`;
 
-    // ✅ Start inactivity timer on login
-    startInactivityTimer();
+    startInactivityTimer(); // Start inactivity tracking
   } else {
     greetingSection.style.display = "none";
-
-    // ✅ Clear inactivity timer on logout
-    clearTimeout(inactivityTimer);
+    clearTimeout(inactivityTimer); // Stop if user logs out
   }
 }
 
-
+// Navigation click tracking
 function handleNavClick(label) {
+  const company = getCompany();
+
   window.dataLayer = window.dataLayer || [];
   window.dataLayer.push({
     event: "navigation_click",
     nav_item: label,
-    company: getCompany()
+    company: company
   });
 
   mixpanel.track("navigation_click", {
     nav_item: label,
-    company: getCompany()
+    company: company
   });
 }
 
+// Login modal toggle
 function toggleLoginModal() {
   const modal = document.getElementById("login-modal");
   modal.style.display = modal.style.display === "block" ? "none" : "block";
@@ -201,9 +193,9 @@ function toggleLoginModal() {
 
 document.addEventListener("DOMContentLoaded", updateLoginState);
 
+// Inactivity timer logic
 let inactivityTimer;
 
-// Call this when user is logged in
 function startInactivityTimer() {
   resetInactivityTimer();
 
@@ -212,21 +204,30 @@ function startInactivityTimer() {
   document.addEventListener("click", resetInactivityTimer);
 }
 
-// Resets the timer
 function resetInactivityTimer() {
   clearTimeout(inactivityTimer);
   inactivityTimer = setTimeout(() => {
-    triggerInactivityReminder(); // Show 1-min warning
-    setTimeout(() => {
-      logoutUser(); // Auto logout after reminder
-    }, 60000); // 1 min after reminder
-  }, 300000); // 5 min inactivity
+    triggerInactivityReminder(); // 5-min reminder
+    setTimeout(async () => {
+      const username = getUser();
+      const company = getCompany();
+      mixpanel.track("auto_logout_inactivity", {
+        message: "User auto-logged out after 6 minutes of inactivity",
+        user: username || "Unknown",
+        company: company || "Unknown"
+      });
+
+      alert("You have been automatically logged out due to inactivity.");
+      logoutUser();
+    }, 60000); // 1 minute after reminder
+  }, 300000); // 5 minutes
 }
 
 function triggerInactivityReminder() {
-  alert("You've been inactive for a while. You will be logged out in 1 minute.");
+  alert("You've been inactive for 5 minutes. You will be logged out in 1 more minute.");
   mixpanel.track('inactivity_reminder', {
     message: "User inactive for 5 min",
-    company: localStorage.getItem('company') || 'Unknown'
+    user: getUser() || 'Unknown',
+    company: getCompany() || 'Unknown'
   });
 }
