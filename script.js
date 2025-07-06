@@ -122,6 +122,19 @@ async function logoutUser() {
   updateLoginState();
 }
 
+// function updateLoginState() {
+//   const user = localStorage.getItem("user");
+//   const greetingSection = document.getElementById("greeting-section");
+//   const welcomeMessage = document.getElementById("welcome-message");
+
+//   if (user) {
+//     greetingSection.style.display = "block";
+//     welcomeMessage.textContent = `Welcome, ${user}!`;
+//   } else {
+//     greetingSection.style.display = "none";
+//   }
+// }
+
 function updateLoginState() {
   const user = localStorage.getItem("user");
   const greetingSection = document.getElementById("greeting-section");
@@ -130,8 +143,14 @@ function updateLoginState() {
   if (user) {
     greetingSection.style.display = "block";
     welcomeMessage.textContent = `Welcome, ${user}!`;
+
+    // ✅ Start inactivity timer on login
+    startInactivityTimer();
   } else {
     greetingSection.style.display = "none";
+
+    // ✅ Clear inactivity timer on logout
+    clearTimeout(inactivityTimer);
   }
 }
 
@@ -155,3 +174,33 @@ function toggleLoginModal() {
 }
 
 document.addEventListener("DOMContentLoaded", updateLoginState);
+
+let inactivityTimer;
+
+// Call this when user is logged in
+function startInactivityTimer() {
+  resetInactivityTimer();
+
+  document.addEventListener("mousemove", resetInactivityTimer);
+  document.addEventListener("keydown", resetInactivityTimer);
+  document.addEventListener("click", resetInactivityTimer);
+}
+
+// Resets the timer
+function resetInactivityTimer() {
+  clearTimeout(inactivityTimer);
+  inactivityTimer = setTimeout(() => {
+    triggerInactivityReminder(); // Show 1-min warning
+    setTimeout(() => {
+      logoutUser(); // Auto logout after reminder
+    }, 60000); // 1 min after reminder
+  }, 300000); // 5 min inactivity
+}
+
+function triggerInactivityReminder() {
+  alert("You've been inactive for a while. You will be logged out in 1 minute.");
+  mixpanel.track('inactivity_reminder', {
+    message: "User inactive for 5 min",
+    company: localStorage.getItem('company') || 'Unknown'
+  });
+}
