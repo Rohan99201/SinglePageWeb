@@ -7,6 +7,14 @@ async function sha256(input) {
   return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 }
 
+function getCompany() {
+  return localStorage.getItem("company") || "";
+}
+
+function getUser() {
+  return localStorage.getItem("user") || "";
+}
+
 function trackClick(buttonOrLabel, eventName) {
   const button = buttonOrLabel;
   const productCard = button.closest('.product-card');
@@ -31,22 +39,22 @@ function trackClick(buttonOrLabel, eventName) {
   window.dataLayer = window.dataLayer || [];
   window.dataLayer.push({
     event: eventName,
-    ecommerce: ecommerceData
+    ecommerce: ecommerceData,
+    company: getCompany()
   });
 
-  // Mixpanel
-  // mixpanel.track(eventName, item);
+  const mpData = {
+    ...item,
+    company: getCompany()
+  };
 
   if (eventName === 'purchase') {
-    mixpanel.track('purchase', {
-      ...item,
-      transaction_id: 'T' + Date.now(),
-      value: item.price,
-      currency: 'USD'
-    });
-  } else {
-    mixpanel.track(eventName, item);
-  }  
+    mpData.transaction_id = 'T' + Date.now();
+    mpData.value = item.price;
+    mpData.currency = 'USD';
+  }
+
+  mixpanel.track(eventName, mpData);
 
   alert(`Clicked: ${eventName} - ${item.item_name}`);
   console.log('GA4 + Mixpanel Event:', eventName, ecommerceData);
@@ -57,6 +65,7 @@ async function submitNewsletter(event) {
   const emailInput = event.target.querySelector("input[type='email']");
   const email = emailInput.value.trim().toLowerCase();
   if (!email) return;
+
   const hashedEmail = await sha256(email);
 
   window.dataLayer = window.dataLayer || [];
@@ -73,12 +82,18 @@ async function submitNewsletter(event) {
 
 async function loginUser(event) {
   event.preventDefault();
+
   const username = document.getElementById("username").value.trim().toLowerCase();
-  if (!username) return;
+  const company = document.getElementById("company").value.trim();
+
+  if (!username || !company) return;
+
   const hashedUserID = await sha256(username);
   const userType = "standard";
 
   localStorage.setItem("user", username);
+  localStorage.setItem("company", company);
+
   updateLoginState();
   document.getElementById("login-modal").style.display = "none";
 
@@ -87,14 +102,21 @@ async function loginUser(event) {
     event: 'user_login',
     userID_sha256: hashedUserID,
     userType: userType,
+    company: company,
     userStatus: 'logged_in'
   });
 
-  // Mixpanel login tracking
+  // Mixpanel login setup
   mixpanel.identify(hashedUserID);
+  mixpanel.register({
+    userID_sha256: hashedUserID,
+    company: company,
+    userStatus: 'logged_in'
+  });
   mixpanel.people.set({
     $name: username,
-    user_type: userType
+    user_type: userType,
+    company: company
   });
   mixpanel.track("user_login");
 
@@ -111,7 +133,8 @@ async function logoutUser() {
     window.dataLayer.push({
       event: 'user_logout',
       userID_sha256: hashedUserID,
-      userStatus: 'logged_out'
+      userStatus: 'logged_out',
+      company: getCompany()
     });
 
     mixpanel.track("user_logout");
@@ -119,11 +142,13 @@ async function logoutUser() {
   }
 
   localStorage.removeItem("user");
+  localStorage.removeItem("company");
+
   updateLoginState();
 }
 
 // function updateLoginState() {
-//   const user = localStorage.getItem("user");
+//   const user = getUser();
 //   const greetingSection = document.getElementById("greeting-section");
 //   const welcomeMessage = document.getElementById("welcome-message");
 
@@ -154,18 +179,19 @@ function updateLoginState() {
   }
 }
 
+
 function handleNavClick(label) {
   window.dataLayer = window.dataLayer || [];
   window.dataLayer.push({
     event: "navigation_click",
-    nav_item: label
+    nav_item: label,
+    company: getCompany()
   });
 
-  // mixpanel.track("navigation_click", {
-  //   nav_item: label
-  // });
-
-  // console.log("navigation_click:", label);
+  mixpanel.track("navigation_click", {
+    nav_item: label,
+    company: getCompany()
+  });
 }
 
 function toggleLoginModal() {
