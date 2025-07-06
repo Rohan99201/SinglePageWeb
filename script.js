@@ -45,7 +45,8 @@ function trackClick(buttonOrLabel, eventName) {
 
   const mpData = {
     ...item,
-    company: getCompany()
+    company: getCompany(),
+    username: getUser()
   };
 
   if (eventName === 'purchase') {
@@ -74,6 +75,12 @@ async function submitNewsletter(event) {
     email_sha256: hashedEmail
   });
 
+  mixpanel.track('subscribe_newsletter', {
+    email_sha256: hashedEmail,
+    username: getUser(),
+    company: getCompany()
+  });
+
   alert("Subscribed with email (hashed): " + hashedEmail);
   console.log("Newsletter subscribed (hashed):", hashedEmail);
 
@@ -97,6 +104,7 @@ async function loginUser(event) {
   updateLoginState();
   document.getElementById("login-modal").style.display = "none";
 
+  // GA4
   window.dataLayer = window.dataLayer || [];
   window.dataLayer.push({
     event: 'user_login',
@@ -106,11 +114,13 @@ async function loginUser(event) {
     userStatus: 'logged_in'
   });
 
+  // Mixpanel
   mixpanel.identify(hashedUserID);
   mixpanel.register({
     userID_sha256: hashedUserID,
     company: company,
-    userStatus: 'logged_in'
+    userStatus: 'logged_in',
+    username: username
   });
   mixpanel.people.set({
     $name: username,
@@ -129,6 +139,7 @@ async function logoutUser(source = "manual") {
   const hashedUserID = username ? await sha256(username.toLowerCase()) : null;
 
   if (hashedUserID) {
+    // GA4
     window.dataLayer = window.dataLayer || [];
     window.dataLayer.push({
       event: 'user_logout',
@@ -137,36 +148,43 @@ async function logoutUser(source = "manual") {
       company: company
     });
 
+    // Mixpanel logout tracking
     mixpanel.track("user_logout", {
       userID_sha256: hashedUserID,
       company: company,
+      username: username,
       userStatus: 'logged_out',
       logout_source: source
     });
 
-    // Stop session recording (client-side hint only, Mixpanel controls backend timing)
+    // Stop session recording
     mixpanel.track("session_recording_stopped", {
       reason: "inactivity_logout",
-      company: company
+      company: company,
+      userID_sha256: hashedUserID,
+      username: username,
+      userStatus: "logged_out"
     });
-    console.log("🛑 Session recording marked as stopped due to inactivity.");
 
+    console.log("🛑 Session recording stopped — userStatus: 'logged_out'");
+
+    // Clear Mixpanel session
     mixpanel.reset();
 
-    // Re-register userStatus as logged_out
+    // Explicitly re-register to update `userStatus` after reset
     mixpanel.register({
       userStatus: "logged_out"
     });
-    console.log("🔓 Mixpanel: userStatus set to logged_out after reset");
+    console.log("🔓 Mixpanel: userStatus set to 'logged_out' after reset");
   }
 
+  // Clear localStorage
   localStorage.removeItem("user");
   localStorage.removeItem("company");
 
   updateLoginState();
 }
 
-// Update UI based on login state
 function updateLoginState() {
   const user = getUser();
   const greetingSection = document.getElementById("greeting-section");
@@ -175,32 +193,28 @@ function updateLoginState() {
   if (user) {
     greetingSection.style.display = "block";
     welcomeMessage.textContent = `Welcome, ${user}!`;
-
-    startInactivityTimer(); // Start inactivity tracking
+    startInactivityTimer();
   } else {
     greetingSection.style.display = "none";
-    clearTimeout(inactivityTimer); // Stop if user logs out
+    clearTimeout(inactivityTimer);
   }
 }
 
-// Navigation click tracking
 function handleNavClick(label) {
-  const company = getCompany();
+  mixpanel.track("navigation_click", {
+    nav_item: label,
+    company: getCompany(),
+    username: getUser()
+  });
 
   window.dataLayer = window.dataLayer || [];
   window.dataLayer.push({
     event: "navigation_click",
     nav_item: label,
-    company: company
-  });
-
-  mixpanel.track("navigation_click", {
-    nav_item: label,
-    company: company
+    company: getCompany()
   });
 }
 
-// Login modal toggle
 function toggleLoginModal() {
   const modal = document.getElementById("login-modal");
   modal.style.display = modal.style.display === "block" ? "none" : "block";
@@ -221,21 +235,29 @@ function startInactivityTimer() {
 
 function resetInactivityTimer() {
   clearTimeout(inactivityTimer);
+
   inactivityTimer = setTimeout(() => {
-    triggerInactivityReminder(); // 5-min warning
+    triggerInactivityReminder(); // after 5 min
     setTimeout(() => {
       mixpanel.track("auto_logout_inactivity", {
         message: "User auto-logged out after 6 minutes of inactivity",
-        user: getUser() || "Unknown",
-        company: getCompany() || "Unknown"
+        username: getUser() || "Unknown",
+        company: getCompany() || "Unknown",
+        userStatus: "logged_out"
       });
 
       console.log("🕒 Auto logout due to inactivity.");
       alert("You have been automatically logged out due to inactivity.");
       logoutUser("inactivity");
-    }, 60000); // 1 minute after warning
-  }, 300000); // 5 min inactivity
+    }, 60000); // 1 min after 5-min warning
+  }, 300000); // 5 min
+}
 
-  // ✅ Optional: client-side simulation of session recording timeout
-  // Mixpanel's true `record_idle_timeout_ms` is controlled in their backend
+function triggerInactivityReminder() {
+  alert("You've been inactive for 5 minutes. You will be logged out in 1 minute.");
+  mixpanel.track('inactivity_reminder', {
+    message: "User inactive for 5 min",
+    username: getUser() || 'Unknown',
+    company: getCompany() || 'Unknown'
+  });
 }
