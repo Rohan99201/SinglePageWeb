@@ -261,3 +261,64 @@ function triggerInactivityReminder() {
     company: getCompany() || 'Unknown'
   });
 }
+
+document.addEventListener("DOMContentLoaded", function() {
+  const leadForm = document.getElementById("b2b-lead-form");
+  const successMsg = document.getElementById("form-success-msg");
+  const formDesc = document.getElementById("form-desc");
+
+  // Helper function to turn "Technology for Workforce Management" into "TWM"
+  function createAbbreviation(text) {
+    // Remove common lowercase connector words
+    const cleaned = text.replace(/\b(for|a|to|and)\b/gi, "");
+    // Match the first letter of every remaining word
+    const letters = cleaned.match(/\b([a-zA-Z])/g);
+    return letters ? letters.join('').toUpperCase() : "";
+  }
+
+  if (leadForm) {
+    leadForm.addEventListener("submit", function(event) {
+      event.preventDefault(); // Prevent page reload
+
+      // 1. Extract values
+      const title = document.getElementById("job-title").value;
+      const companyName = document.getElementById("company-name").value.trim();
+      const rawEmail = document.getElementById("work-email").value.trim().toLowerCase();
+      
+      // 2. Extract just the domain from the email (e.g., john@brainlabs.com -> brainlabs.com)
+      const emailDomain = rawEmail.includes("@") ? rawEmail.split("@")[1] : "";
+
+      // 3. Gather checked boxes and map them to abbreviations
+      const solutionNodes = document.querySelectorAll('input[name="solution_need"]:checked');
+      const solutionAbbrv = Array.from(solutionNodes).map(cb => createAbbreviation(cb.value)).join(", ");
+
+      const staffingNodes = document.querySelectorAll('input[name="staffing_need"]:checked');
+      const staffingAbbrv = Array.from(staffingNodes).map(cb => createAbbreviation(cb.value)).join(", ");
+
+      // 4. Push to GA4 DataLayer
+      window.dataLayer = window.dataLayer || [];
+      window.dataLayer.push({
+        event: 'form_complete',
+        form_type: 'b2b_lead',
+        company_name: companyName,
+        title: title,
+        domain: emailDomain,
+        solution_needs: solutionAbbrv, // Output example: "TWM, SC"
+        staffing_needs: staffingAbbrv  // Output example: "AS, ILES"
+      });
+
+      console.log("GA4 DataLayer Push:", {
+        company_name: companyName,
+        title: title,
+        domain: emailDomain,
+        solution_needs: solutionAbbrv,
+        staffing_needs: staffingAbbrv
+      });
+
+      // 5. Update UI: Hide form, show success message
+      leadForm.style.display = "none";
+      formDesc.style.display = "none";
+      successMsg.style.display = "block";
+    });
+  }
+});

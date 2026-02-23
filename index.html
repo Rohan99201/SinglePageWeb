@@ -125,7 +125,75 @@
     <p id="welcome-message"></p>
     <button onclick="logoutUser()">Logout</button>
   </section>
+<section class="contact-form-section">
+  <div class="form-container">
+    <h2>Request Staffing Services</h2>
+    <p class="form-desc" id="form-desc">* Indicates Required Fields</p>
+    
+    <div id="form-success-msg" style="display: none; text-align: center; padding: 40px 20px; color: #155724; background-color: #d4edda; border: 1px solid #c3e6cb; border-radius: 10px;">
+      <h3 style="margin-bottom: 10px;">Thank you!</h3>
+      <p>Your form has been successfully submitted. We will be in touch shortly.</p>
+    </div>
 
+    <form id="b2b-lead-form">
+      <div class="form-row">
+        <div class="form-group">
+          <label for="fname">First Name *</label>
+          <input type="text" id="fname" required placeholder="First Name">
+        </div>
+        <div class="form-group">
+          <label for="lname">Last Name *</label>
+          <input type="text" id="lname" required placeholder="Last Name">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="job-title">Title Selection *</label>
+        <select id="job-title" required>
+          <option value="" disabled selected>-- Select an option --</option>
+          <option value="C-Suite">C-Suite</option>
+          <option value="SVP/VP">SVP/VP</option>
+          <option value="Director">Director</option>
+          <option value="Manager">Manager</option>
+          <option value="Analyst">Analyst</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="work-email">Work Email *</label>
+          <input type="email" id="work-email" required placeholder="name@company.com">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="company-name">Company Name *</label>
+        <input type="text" id="company-name" required>
+      </div>
+
+      <div class="form-group checkbox-group">
+        <p class="checkbox-legend">Solution Need</p>
+        <label><input type="checkbox" name="solution_need" value="Technology for Workforce Management"> Technology for Workforce Management</label>
+        <label><input type="checkbox" name="solution_need" value="Technology for Language Services"> Technology for Language Services</label>
+        <label><input type="checkbox" name="solution_need" value="Schedule a Consultation"> Schedule a Consultation</label>
+        <label><input type="checkbox" name="solution_need" value="Become a Supplier"> Become a Supplier</label>
+        <label><input type="checkbox" name="solution_need" value="Request Staffing Services"> Request Staffing Services</label>
+      </div>
+
+      <div class="form-group checkbox-group">
+        <p class="checkbox-legend">Staffing Need</p>
+        <label><input type="checkbox" name="staffing_need" value="Academic Search"> Academic Search</label>
+        <label><input type="checkbox" name="staffing_need" value="Interim Leadership/Executive Search"> Interim Leadership/Executive Search</label>
+        <label><input type="checkbox" name="staffing_need" value="Labor Disruption"> Labor Disruption</label>
+        <label><input type="checkbox" name="staffing_need" value="Nursing"> Nursing</label>
+        <label><input type="checkbox" name="staffing_need" value="Revenue Cycle"> Revenue Cycle</label>
+      </div>
+
+      <button type="submit" class="submit-btn">Submit Request</button>
+    </form>
+  </div>
+</section>
   <main class="hero">
     <div class="product-grid">
       <!-- Example product layout -->
