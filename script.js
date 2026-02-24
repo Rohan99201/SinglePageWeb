@@ -261,3 +261,95 @@ function triggerInactivityReminder() {
     company: getCompany() || 'Unknown'
   });
 }
+
+document.addEventListener("DOMContentLoaded", function() {
+  const leadForm = document.getElementById("b2b-lead-form");
+  const successMsg = document.getElementById("form-success-msg");
+  const formDesc = document.getElementById("form-desc");
+
+  // Helper 1: Turn "Technology for Workforce Management" into "TWM"
+  function createAbbreviation(text) {
+    const cleaned = text.replace(/\b(for|a|to|and)\b/gi, "");
+    const letters = cleaned.match(/\b([a-zA-Z])/g);
+    return letters ? letters.join('').toUpperCase() : "";
+  }
+
+  // Helper 2: robust cookie reader
+  function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+    return null;
+  }
+
+  // Helper 3: Dynamically find the GA4 Session ID cookie (_ga_XXXXXXXXX)
+  function getGaSessionId() {
+    const cookies = document.cookie.split(';');
+    for (let i = 0; i < cookies.length; i++) {
+      const cookie = cookies[i].trim();
+      if (cookie.startsWith('_ga_')) {
+        const parts = cookie.split('=')[1].split('.');
+        // The session ID is typically the 3rd element in the GS1.1.XXXXXXXXX string
+        if (parts.length >= 3) return parts[2]; 
+      }
+    }
+    return 'unknown';
+  }
+
+  if (leadForm) {
+    leadForm.addEventListener("submit", function(event) {
+      event.preventDefault(); // Prevent page reload
+
+      // 1. Extract form values
+      const title = document.getElementById("job-title").value;
+      const companyName = document.getElementById("company-name").value.trim();
+      const rawEmail = document.getElementById("work-email").value.trim().toLowerCase();
+      
+      // 2. Extract domain
+      const emailDomain = rawEmail.includes("@") ? rawEmail.split("@")[1] : "";
+
+      // 3. Map checkboxes to abbreviations
+      const solutionNodes = document.querySelectorAll('input[name="solution_need"]:checked');
+      const solutionAbbrv = Array.from(solutionNodes).map(cb => createAbbreviation(cb.value)).join(", ");
+
+      const staffingNodes = document.querySelectorAll('input[name="staffing_need"]:checked');
+      const staffingAbbrv = Array.from(staffingNodes).map(cb => createAbbreviation(cb.value)).join(", ");
+
+      // 4. Extract GA4 Identifiers
+      const rawClientIdCookie = getCookie('_ga');
+      // Extract the actual Client ID (removes the "GA1.1." prefix)
+      const clientId = rawClientIdCookie ? rawClientIdCookie.substring(6) : 'unknown';
+      const sessionId = getGaSessionId();
+
+      // 5. Push to GA4 DataLayer
+      window.dataLayer = window.dataLayer || [];
+      window.dataLayer.push({
+        event: 'form_complete',
+        form_type: 'b2b_lead',
+        company_name: companyName,
+        title: title,
+        domain: emailDomain,
+        solution_needs: solutionAbbrv, 
+        staffing_needs: staffingAbbrv,
+        ga_client_id: clientId,    // Newly added Join Key
+        ga_session_id: sessionId   // Newly added Join Key
+      });
+
+      console.log("GA4 DataLayer Push:", {
+        event: 'form_complete',
+        company_name: companyName,
+        title: title,
+        domain: emailDomain,
+        solution_needs: solutionAbbrv,
+        staffing_needs: staffingAbbrv,
+        ga_client_id: clientId,
+        ga_session_id: sessionId
+      });
+
+      // 6. Update UI
+      leadForm.style.display = "none";
+      formDesc.style.display = "none";
+      successMsg.style.display = "block";
+    });
+  }
+});

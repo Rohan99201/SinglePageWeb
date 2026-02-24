@@ -243,3 +243,91 @@ font-size: 28px;
 font-weight: bold;
 cursor: pointer;
 }
+
+/* --- B2B Contact Form Section --- */
+.contact-form-section {
+  padding: 40px 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.form-container {
+  background: rgba(255, 255, 255, 0.95);
+  color: #333;
+  padding: 30px;
+  border-radius: 15px;
+  width: 100%;
+  max-width: 600px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+.form-container h2 {
+  color: #d62828;
+  margin-bottom: 5px;
+}
+
+.form-desc {
+  font-size: 0.85rem;
+  color: #666;
+  margin-bottom: 20px;
+}
+
+.form-row {
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap; /* Ensures it stacks nicely on mobile */
+}
+
+.form-group {
+  margin-bottom: 15px;
+  flex: 1;
+  min-width: 200px; /* Prevents squishing on small screens */
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group label {
+  font-weight: bold;
+  font-size: 0.9rem;
+  margin-bottom: 5px;
+}
+
+.form-group input[type="text"],
+.form-group input[type="email"],
+.form-group input[type="tel"],
+.form-group select {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 1rem;
+}
+
+.checkbox-group .checkbox-legend {
+  font-weight: bold;
+  font-size: 0.9rem;
+  margin-bottom: 8px;
+}
+
+.checkbox-group label {
+  font-weight: normal;
+  display: block;
+  margin-bottom: 5px;
+  cursor: pointer;
+}
+
+.submit-btn {
+  width: 100%;
+  padding: 12px;
+  background-color: #d62828;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: background-color 0.3s ease;
+}
+
+.submit-btn:hover {
+  background-color: #a61b1b;
+}
