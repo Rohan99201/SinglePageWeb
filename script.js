@@ -20,22 +20,54 @@ function trackClick(buttonOrLabel, eventName) {
   const productCard = button.closest('.product-card');
   if (!productCard) return;
 
-  const item = {
-    item_id: productCard.getAttribute('data-item-id'),
-    item_name: productCard.getAttribute('data-item-name'),
-    price: parseFloat(productCard.getAttribute('data-price')),
-    item_category: productCard.getAttribute('data-item-category')
-  };
+  const isCombo = productCard.getAttribute('data-combo') === 'true';
+
+  let items = [];
+
+  if (isCombo) {
+    // ✅ Combo Product → 2 items
+    items = [
+      {
+        item_id: "laptop-001",
+        item_name: "Laptop",
+        price: 1200,
+        item_category: "Electronics",
+        quantity: 1
+      },
+      {
+        item_id: "headphones-002",
+        item_name: "Headphones",
+        price: 200,
+        item_category: "Electronics",
+        quantity: 1
+      }
+    ];
+  } else {
+    // ✅ Normal product
+    const item = {
+  item_id: productCard.getAttribute('data-item-id'),
+  item_name: productCard.getAttribute('data-item-name'),
+  price: parseFloat(productCard.getAttribute('data-price')),
+  item_category: productCard.getAttribute('data-item-category'),
+  quantity: parseInt(productCard.getAttribute('data-quantity')) || 1
+};
+
+    items = [item];
+  }
+
+  // ✅ Calculate total value (important for GA4)
+  const totalValue = items.reduce((sum, item) => sum + (item.price * (item.quantity || 1)), 0);
 
   const ecommerceData = eventName === 'purchase'
     ? {
         transaction_id: 'T' + Date.now(),
-        value: item.price,
+        value: totalValue,
         currency: 'USD',
-        items: [item]
+        items: items
       }
-    : { items: [item] };
+    : { items: items };
 
+  // 🔥 GA4 DataLayer
   window.dataLayer = window.dataLayer || [];
   window.dataLayer.push({
     event: eventName,
@@ -43,21 +75,23 @@ function trackClick(buttonOrLabel, eventName) {
     company: getCompany()
   });
 
+  // 🔥 Mixpanel (flattened but includes items)
   const mpData = {
-    ...item,
+    items: items,
+    total_value: totalValue,
     company: getCompany(),
     username: getUser()
   };
 
   if (eventName === 'purchase') {
-    mpData.transaction_id = 'T' + Date.now();
-    mpData.value = item.price;
+    mpData.transaction_id = ecommerceData.transaction_id;
+    mpData.value = totalValue;
     mpData.currency = 'USD';
   }
 
   mixpanel.track(eventName, mpData);
 
-  alert(`Clicked: ${eventName} - ${item.item_name}`);
+  alert(`Clicked: ${eventName}`);
   console.log('GA4 + Mixpanel Event:', eventName, ecommerceData);
 }
 
